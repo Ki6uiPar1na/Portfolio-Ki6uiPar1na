@@ -10,7 +10,7 @@ import { PROFILE, SECTIONS } from './data'
 // Home sections, with the Blog route slotted in before Contact.
 const NAV = [
   ...SECTIONS.filter((s) => s.id !== 'hero' && s.id !== 'contact').map((s) => ({ ...s, to: `/#${s.id}` })),
-  { id: 'blog', label: 'Blog', to: '/#blog' },
+  { id: 'blog', label: 'Blog', to: '/blog' },
   { id: 'contact', label: 'Contact', to: '/#contact' },
 ]
 
