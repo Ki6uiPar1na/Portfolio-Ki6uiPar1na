@@ -202,7 +202,7 @@ export const About = () => (
         <Tile label="Location" className="h-full">
           <MapPin className="text-accent" />
           <p className="mt-2 font-serif text-xl font-semibold">{PROFILE.location}</p>
-          <p className="mt-2 text-sm text-stone-600">Also active in Mid-Day Programming Club and Rotaract Club of JKKNIU.</p>
+          <p className="mt-2 text-sm text-stone-600">Jatiya Kabi Kazi Nazrul Islam University, Trishal, Mymensingh</p>
         </Tile>
       </Reveal>
       <Reveal delay={0.05} className="md:col-span-6">
