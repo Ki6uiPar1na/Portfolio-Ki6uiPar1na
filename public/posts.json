@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-20T08:54:31.787Z",
+  "generatedAt": "2026-10-20T18:45:15.630Z",
   "sources": {
     "medium": {
       "handle": "@ki6uipar1na",
@@ -9,7 +9,7 @@
     "github": {
       "repo": "Ki6uiPar1na/writeup",
       "ok": true,
-      "count": 2,
+      "count": 3,
       "note": null
     }
   },
@@ -56,6 +56,22 @@
         "ssti"
       ],
       "event": "bcs-ctf",
+      "thumbnail": null,
+      "readingTime": 1
+    },
+    {
+      "id": "github-test-sql",
+      "source": "github",
+      "slug": "test-sql",
+      "title": "Web 3 — SSTI",
+      "url": "https://github.com/Ki6uiPar1na/writeup/blob/main/test/sql.md",
+      "date": "2026-09-27T00:00:00.000Z",
+      "summary": "This is just for updating test",
+      "tags": [
+        "web",
+        "ssti"
+      ],
+      "event": "test",
       "thumbnail": null,
       "readingTime": 1
     }

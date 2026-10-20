@@ -5,7 +5,7 @@ import {
   Send, Smartphone, Shield, Wrench, Code2, Monitor, Terminal,
 } from 'lucide-react'
 import {
-  CERTIFICATIONS, CONTACT_EMAIL, CONTESTS, COURSES, EDUCATION, GROUP_COLOR, ORGANIZATIONS, PROFILE, PROJECTS,
+  CERTIFICATIONS, CONTACT_EMAIL, CONTESTS, COURSES, EDUCATION, GROUP_COLOR, HERO, MEDALS, ORGANIZATIONS, OVERVIEW, PROFILE, PROJECTS,
   SKILLS, SKILL_GROUPS, STATS,
 } from '../data'
 
@@ -76,7 +76,7 @@ export function Hero() {
       <div className="relative mx-auto max-w-7xl px-5">
         <div className="relative min-h-[37rem] md:min-h-[40rem]">
           <h1 className="giant pointer-events-none absolute inset-x-0 top-[3%] z-0 select-none text-center" aria-label={PROFILE.name}>
-            <span className="block md:inline" aria-hidden>Khairul</span>{' '}<span className="block md:inline" aria-hidden>Islam</span>
+            {(([first, ...rest]) => <><span className="block md:inline" aria-hidden>{first}</span>{' '}<span className="block md:inline" aria-hidden>{rest.join(' ')}</span></>)(HERO.display_name.split(' '))}
           </h1>
           <ContestFlight />
           <img src={`${import.meta.env.BASE_URL}me.png`} alt={PROFILE.name}
@@ -88,7 +88,7 @@ export function Hero() {
           <div>
             <p className="label mb-2">Role</p>
             <p className="font-serif text-2xl leading-snug md:text-3xl">{PROFILE.subtitle.split(' | ').join(' · ')}</p>
-            <p className="mt-2 text-stone-600">@{PROFILE.handle} — CTF champion, bug-bounty placer and CSE student at JKKNIU.</p>
+            <p className="mt-2 text-stone-600">@{PROFILE.handle} — {HERO.tagline}</p>
           </div>
           <div className="flex flex-wrap items-center gap-3 md:justify-end">
             <a href="#achievements" className="btn bg-ink text-paper hover:bg-teal-800">See achievements <ArrowUpRight size={16} /></a>
@@ -140,7 +140,7 @@ function Ring({ value, max, label }) {
 const SKILL_ICON = { sec: Shield, tool: Wrench, dev: Code2, os: Monitor }
 
 export const About = () => (
-  <Wrap id="about" num="01" kicker="Overview" title="Security researcher by passion, programmer by training.">
+  <Wrap id="about" num="01" kicker="Overview" title={OVERVIEW.title}>
     <div className="grid gap-4 md:grid-cols-12">
       <Reveal className="md:col-span-8">
         <Tile label="Abstract" className="h-full !p-7">
@@ -150,8 +150,8 @@ export const About = () => (
       <Reveal delay={0.05} className="md:col-span-4">
         <Tile label="Education" className="h-full">
           <div className="flex items-center gap-4">
-            <Ring value={3.65} max={4} label="CGPA" />
-            <div><p className="font-serif text-lg font-semibold leading-tight">B.Sc. in CSE</p><p className="mt-1 text-sm text-stone-600">Jatiya Kabi Kazi Nazrul Islam University</p><p className="mt-1 text-xs text-stone-400">2023 – present</p></div>
+            <Ring value={OVERVIEW.cgpa} max={OVERVIEW.cgpa_max} label="CGPA" />
+            <div><p className="font-serif text-lg font-semibold leading-tight">{OVERVIEW.degree}</p><p className="mt-1 text-sm text-stone-600">{EDUCATION[0]?.school}</p><p className="mt-1 text-xs text-stone-400">{EDUCATION[0]?.period}</p></div>
           </div>
           <ul className="mt-5 space-y-2 border-t border-stone-200 pt-4 text-sm">
             {EDUCATION.slice(1).map((e) => (
@@ -192,9 +192,9 @@ export const About = () => (
         <div className="tile h-full !border-0 bg-gradient-to-br from-teal-700 to-teal-900 text-white">
           <p className="label mb-3 !text-teal-200">Leadership</p>
           <Shield className="text-teal-200" />
-          <p className="mt-3 font-serif text-3xl font-semibold">President</p>
-          <p className="mt-1 text-sm text-teal-100">JKKNIU Cyber Security Club — led teams in national competitions.</p>
-          <p className="mt-4 text-xs text-teal-200">{ORGANIZATIONS.length} roles · 3 organizations</p>
+          <p className="mt-3 font-serif text-3xl font-semibold">{OVERVIEW.leadership_role}</p>
+          <p className="mt-1 text-sm text-teal-100">{OVERVIEW.leadership_text}</p>
+          <p className="mt-4 text-xs text-teal-200">{ORGANIZATIONS.length} roles · {OVERVIEW.orgCount} organizations</p>
         </div>
       </Reveal>
 
@@ -202,14 +202,14 @@ export const About = () => (
         <Tile label="Location" className="h-full">
           <MapPin className="text-accent" />
           <p className="mt-2 font-serif text-xl font-semibold">{PROFILE.location}</p>
-          <p className="mt-2 text-sm text-stone-600">Jatiya Kabi Kazi Nazrul Islam University, Trishal, Mymensingh</p>
+          <p className="mt-2 text-sm text-stone-600">{PROFILE.university}</p>
         </Tile>
       </Reveal>
       <Reveal delay={0.05} className="md:col-span-6">
         <Tile label="Competitive programming" className="h-full">
           <Terminal className="text-accent" />
-          <p className="mt-2 font-serif text-xl font-semibold">Codeforces max rating 1087 · CodeChef 2★</p>
-          <p className="mt-2 text-sm text-stone-600">ACM ICPC 2025 Regionalist · 550+ Codeforces and 150+ LeetCode problems solved.</p>
+          <p className="mt-2 font-serif text-xl font-semibold">{OVERVIEW.cp_title}</p>
+          <p className="mt-2 text-sm text-stone-600">{OVERVIEW.cp_text}</p>
         </Tile>
       </Reveal>
     </div>
@@ -245,15 +245,6 @@ function Medal({ tier, top, title, sub }) {
     </div>
   )
 }
-
-const MEDALS = [
-  { tier: 'gold', top: '1st', title: 'RoboFest CTF 2026', sub: 'Champion' },
-  { tier: 'silver', top: '2nd', title: 'BCS CTF 2026', sub: '1st Runners-Up' },
-  { tier: 'teal', top: '11th', title: 'HackerOne Bug Hunt', sub: 'Onsite · with bounty' },
-  { tier: 'indigo', top: 'Top 100', title: 'Black Hat CTF', sub: 'Bugcrowd · 2025' },
-  { tier: 'bronze', top: 'Final', title: 'z0d1ak CTF', sub: 'VIT Vellore, India' },
-  { tier: 'silver', top: 'ICPC', title: 'ACM ICPC 2025', sub: 'Regionalist' },
-]
 
 const yearOf = (d) => (d.match(/20\d\d/g) || ['—']).slice(-1)[0]
 const IMPACT = {

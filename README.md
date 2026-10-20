@@ -1,6 +1,16 @@
 # Portfolio-Ki6uiPar1na
 
 
+## Editing content (`data.md`)
+
+All site content is in **`data.md`** — profile, summary, hero text, overview tiles, stats, skills, medals, every contest, certifications, education, leadership and projects. Edit it, save, and the site updates (`npm run dev` reloads by itself; on Vercel a push to `main` rebuilds).
+
+- Keep the `##` section headings as they are; add, remove or reorder the rows under them.
+- `- key: value` lines are plain text; the contests/certifications/etc. are Markdown tables (one row per item).
+- A mistake (wrong number of table cells, unknown medal tier, missing section) stops the build with the line number, e.g. `data.md:70 — Medals: tier "platinum" must be one of …`.
+- The stat value `auto` counts every contest in the tables.
+- Not in `data.md`: blog posts (Medium / GitHub, configured in `blog.config.json`), your photo (`public/me.png`), and the browser-tab title in `index.html`.
+
 ## Blog (`/blog`)
 
 A bento dashboard of writeups pulled from **Medium** and/or a **GitHub repo**.

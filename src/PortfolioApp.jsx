@@ -61,7 +61,7 @@ export default function PortfolioApp() {
       <header className="fixed inset-x-0 top-0 z-30 px-4 pt-3">
         <div className="mx-auto flex max-w-6xl items-center justify-between rounded-full border border-stone-200/80 bg-surface/80 px-4 py-2 shadow-sm backdrop-blur-lg">
           <Link to="/" className="flex items-center gap-2 font-serif text-lg font-semibold">
-            <span className="grid h-8 w-8 place-items-center rounded-full bg-ink text-xs font-bold text-paper">K</span>
+            <span className="grid h-8 w-8 place-items-center rounded-full bg-ink text-xs font-bold text-paper">{PROFILE.handle[0]}</span>
             {PROFILE.handle}
           </Link>
           <nav aria-label="Sections" className="hidden items-center gap-1 md:flex">
