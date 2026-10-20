@@ -1,0 +1,41 @@
+# Keeps /blog fresh on Vercel.
+# Every hour: fetch Medium + the writeup repo. If anything changed, commit the new data to main,
+# and Vercel redeploys automatically on that push. If nothing changed, nothing is committed (no wasted deploys).
+# (Medium has no webhooks, so polling is the only way to notice a new story.)
+name: Refresh blog data
+
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch: # "Run workflow" button
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-blog
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Fetch posts
+        run: node scripts/fetch-posts.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # higher GitHub API rate limit
+      - name: Commit if changed
+        run: |
+          if [ -n "$(git status --porcelain public/posts.json public/posts)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add public/posts.json public/posts
+            git commit -m "chore: refresh blog posts"
+            git push
+          else
+            echo "No new posts."
+          fi

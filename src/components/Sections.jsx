@@ -1,27 +1,28 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { animate, motion, useInView } from 'framer-motion'
 import {
-  ArrowUpRight, Award, Building2, ClipboardCheck, Code2, Gamepad2, GraduationCap, Github, Linkedin, Mail,
-  MapPin, Monitor, Send, Shield, Smartphone, Trophy, Wrench,
+  ArrowUpRight, Award, Building2, ClipboardCheck, Gamepad2, GraduationCap, Github, Linkedin, Mail, MapPin,
+  Send, Smartphone, Shield, Wrench, Code2, Monitor, Terminal,
 } from 'lucide-react'
 import {
-  CERTIFICATIONS, CONTACT_EMAIL, CONTESTS, COURSES, EDUCATION, HIGHLIGHTS, ORGANIZATIONS, PROFILE, PROJECTS,
+  CERTIFICATIONS, CONTACT_EMAIL, CONTESTS, COURSES, EDUCATION, GROUP_COLOR, ORGANIZATIONS, PROFILE, PROJECTS,
   SKILLS, SKILL_GROUPS, STATS,
 } from '../data'
 
 /* ───────── helpers ───────── */
-const Reveal = ({ children, delay = 0, className = '' }) => (
+export const Reveal = ({ children, delay = 0, className = '' }) => (
   <motion.div className={className} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, amount: 0.15 }} transition={{ duration: 0.55, delay }}>
+    viewport={{ once: true, amount: 0.12 }} transition={{ duration: 0.55, delay }}>
     {children}
   </motion.div>
 )
 
-const Wrap = ({ id, kicker, title, intro, children, className = '' }) => (
-  <section id={id} className={`mx-auto max-w-6xl px-5 py-14 md:py-28 ${className}`}>
+// Report-style section header: "§ 02 / ACHIEVEMENTS"
+export const Wrap = ({ id, num, kicker, title, intro, children, className = '' }) => (
+  <section id={id} className={`mx-auto max-w-6xl px-5 py-14 md:py-24 ${className}`}>
     <Reveal>
-      <p className="kicker">{kicker}</p>
-      <h2 className="h2 max-w-2xl">{title}</h2>
+      <p className="kicker">§ {num} / {kicker}</p>
+      <h2 className="h2 max-w-3xl">{title}</h2>
       {intro && <p className="mt-3 max-w-2xl text-stone-600">{intro}</p>}
     </Reveal>
     <div className="mt-8 md:mt-10">{children}</div>
@@ -48,13 +49,12 @@ function ContestFlight() {
     return [...CONTESTS.international, ...CONTESTS.national, ...CONTESTS.programming].slice(0, 10).map((c) => clean(c[0]))
   }, [])
   const DURATION = 12
+  const LANES = [-185, 95, -75, 175, -135, 35, -20, 140, -165, 60]
   return (
-    <div className="flight pointer-events-none absolute -inset-x-20 -inset-y-12 z-0 overflow-hidden" aria-hidden>
+    <div className="flight pointer-events-none absolute inset-0 z-[1] overflow-hidden" aria-hidden>
       {names.map((n, i) => {
-        // Alternate right/left, each name in its own vertical lane so they don't stack on top of each other.
-        const LANES = [-185, 95, -75, 175, -135, 35, -20, 140, -165, 60]
         const side = i % 2 === 0 ? 1 : -1
-        const tx = side * (170 + ((i * 53) % 90))
+        const tx = side * (240 + ((i * 53) % 160))
         return (
           <span key={n} className={`flight-item font-serif font-bold ${i % 3 === 0 ? 'text-accent-dark' : 'text-ink'}`}
             style={{ '--tx': `${tx}px`, '--ty': `${LANES[i % LANES.length]}px`, animationDuration: `${DURATION}s`, animationDelay: `${-(i * DURATION) / names.length}s` }}>
@@ -66,49 +66,44 @@ function ContestFlight() {
   )
 }
 
-/* ───────── Hero ───────── */
+/* ───────── Hero: giant name, photo overlapping the letters ───────── */
 export function Hero() {
   return (
-    <section className="relative overflow-hidden pt-28 md:pt-36">
+    <section className="relative overflow-hidden pt-24 md:pt-28">
       <div className="bg-dots mask-fade pointer-events-none absolute inset-0 opacity-60" aria-hidden />
       <div className="pointer-events-none absolute -right-32 top-10 h-96 w-96 rounded-full bg-accent/20 blur-3xl" aria-hidden />
-      <div className="pointer-events-none absolute -left-24 bottom-0 h-72 w-72 rounded-full bg-amber-200/40 blur-3xl" aria-hidden />
 
-      <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-5 pb-16 md:grid-cols-[1.15fr_1fr] md:pb-24">
-        <div>
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-5 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-surface px-4 py-1.5 text-xs font-semibold text-accent-dark shadow-sm">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-accent" /> Open to security & CTF collaborations
-          </motion.p>
-          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
-            className="font-serif text-5xl font-semibold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">
-            I break things <br />to make them <span className="relative whitespace-nowrap text-accent">secure<svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 200 10" preserveAspectRatio="none" aria-hidden><path d="M2 7 Q 50 1 100 5 T 198 4" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" /></svg></span>.
-          </motion.h1>
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="mt-7 max-w-xl text-lg leading-relaxed text-stone-600">
-            <strong className="font-semibold text-ink">{PROFILE.name}</strong> (<span className="text-accent-dark">@{PROFILE.handle}</span>) — {PROFILE.subtitle.split(' | ').join(' · ')}.
-            CTF champion, bug-bounty placer and CSE student at JKKNIU.
-          </motion.p>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }} className="mt-8 flex flex-wrap items-center gap-3">
+      <div className="relative mx-auto max-w-7xl px-5">
+        <div className="relative min-h-[37rem] md:min-h-[40rem]">
+          <h1 className="giant pointer-events-none absolute inset-x-0 top-[3%] z-0 select-none text-center" aria-label={PROFILE.name}>
+            <span className="block md:inline" aria-hidden>Khairul</span>{' '}<span className="block md:inline" aria-hidden>Islam</span>
+          </h1>
+          <ContestFlight />
+          <img src={`${import.meta.env.BASE_URL}me.png`} alt={PROFILE.name}
+            className="photo-fade absolute bottom-0 left-1/2 z-10 h-[26rem] w-auto max-w-none -translate-x-1/2 object-contain object-bottom md:h-[37rem]" />
+        </div>
+
+        {/* intro row under the photo */}
+        <div className="relative z-20 -mt-6 grid items-end gap-6 pb-14 md:grid-cols-[1.2fr_1fr] md:pb-20">
+          <div>
+            <p className="label mb-2">Role</p>
+            <p className="font-serif text-2xl leading-snug md:text-3xl">{PROFILE.subtitle.split(' | ').join(' · ')}</p>
+            <p className="mt-2 text-stone-600">@{PROFILE.handle} — CTF champion, bug-bounty placer and CSE student at JKKNIU.</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-3 md:justify-end">
             <a href="#achievements" className="btn bg-ink text-paper hover:bg-teal-800">See achievements <ArrowUpRight size={16} /></a>
             <a href="#contact" className="btn border border-stone-300 bg-surface hover:border-ink">Get in touch</a>
-            <span className="mx-1 hidden h-6 w-px bg-stone-300 sm:block" />
             {[[Github, PROFILE.github, 'GitHub'], [Linkedin, PROFILE.linkedin, 'LinkedIn'], [Mail, `mailto:${PROFILE.email}`, 'Email']].map(([Icon, href, label]) => (
               <a key={label} href={href} target="_blank" rel="noreferrer" aria-label={label} className="grid h-11 w-11 place-items-center rounded-full border border-stone-200 bg-surface text-stone-600 transition hover:border-accent hover:text-accent"><Icon size={18} /></a>
             ))}
-          </motion.div>
+          </div>
         </div>
-
-        {/* Portrait with floating achievement badges */}
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, delay: 0.15 }} className="relative mx-auto w-full max-w-sm">
-          <ContestFlight />
-          <div className="pointer-events-none absolute inset-x-6 bottom-0 top-10 rounded-full bg-accent/20 blur-3xl" aria-hidden />
-          <img src="/me.png" alt={PROFILE.name} className="photo-fade relative z-10 mx-auto h-[27rem] w-auto max-w-full object-contain object-bottom" />
-        </motion.div>
       </div>
     </section>
   )
 }
 
-/* ───────── Marquee of events ───────── */
+/* ───────── Marquee of events (kept) ───────── */
 export function Marquee() {
   const names = [...CONTESTS.international, ...CONTESTS.national, ...CONTESTS.programming].map((c) => c[0].replace(/\s*\(.*\)/, ''))
   const row = (k) => names.map((n, i) => (
@@ -121,124 +116,182 @@ export function Marquee() {
   )
 }
 
-/* ───────── Stats band (dark) ───────── */
-export const StatsBand = () => (
-  <section className="bg-band text-white">
-    <div className="mx-auto grid max-w-6xl grid-cols-2 gap-y-8 px-5 py-14 md:grid-cols-4">
-      {STATS.map((s, i) => (
-        <Reveal key={s.label} delay={i * 0.08} className="text-center md:border-l md:border-white/10 first:md:border-0">
-          <div className="font-serif text-5xl font-semibold text-teal-200 md:text-6xl"><Counter to={s.value} suffix={s.suffix} /></div>
-          <div className="mt-2 text-sm text-stone-400">{s.label}</div>
-        </Reveal>
-      ))}
-    </div>
-  </section>
+/* ───────── § 01 Overview — bento dashboard ───────── */
+const Tile = ({ label, className = '', children, id }) => (
+  <div id={id} className={`tile scroll-mt-24 ${className}`}>
+    <p className="label mb-3">{label}</p>
+    {children}
+  </div>
 )
 
-/* ───────── About — bento grid ───────── */
+function Ring({ value, max, label }) {
+  const r = 34, c = 2 * Math.PI * r
+  return (
+    <div className="relative grid h-24 w-24 place-items-center">
+      <svg viewBox="0 0 80 80" className="absolute inset-0 -rotate-90">
+        <circle cx="40" cy="40" r={r} fill="none" stroke="rgb(var(--s200))" strokeWidth="7" />
+        <circle cx="40" cy="40" r={r} fill="none" stroke="rgb(var(--accent))" strokeWidth="7" strokeLinecap="round" strokeDasharray={`${(value / max) * c} ${c}`} />
+      </svg>
+      <div className="text-center"><div className="font-serif text-xl font-semibold leading-none">{value}</div><div className="mt-0.5 text-[10px] text-stone-500">{label}</div></div>
+    </div>
+  )
+}
+
+const SKILL_ICON = { sec: Shield, tool: Wrench, dev: Code2, os: Monitor }
+
 export const About = () => (
-  <Wrap id="about" kicker="About" title="Security researcher by passion, programmer by training.">
-    <div className="grid gap-4 md:grid-cols-6">
-      <Reveal className="md:col-span-4 md:row-span-2">
-        <div className="tile h-full !p-8">
-          <p className="text-xl leading-relaxed text-stone-700 md:text-2xl md:leading-relaxed">{PROFILE.summary}</p>
-          <div className="mt-6 flex flex-wrap gap-2">
-            {['Penetration testing', 'Bug bounty', 'Reverse engineering', 'Web security', 'OSINT'].map((t) => <span key={t} className="chip">{t}</span>)}
+  <Wrap id="about" num="01" kicker="Overview" title="Security researcher by passion, programmer by training.">
+    <div className="grid gap-4 md:grid-cols-12">
+      <Reveal className="md:col-span-8">
+        <Tile label="Abstract" className="h-full !p-7">
+          <p className="text-lg leading-relaxed text-stone-700 md:text-xl md:leading-relaxed">{PROFILE.summary}</p>
+        </Tile>
+      </Reveal>
+      <Reveal delay={0.05} className="md:col-span-4">
+        <Tile label="Education" className="h-full">
+          <div className="flex items-center gap-4">
+            <Ring value={3.65} max={4} label="CGPA" />
+            <div><p className="font-serif text-lg font-semibold leading-tight">B.Sc. in CSE</p><p className="mt-1 text-sm text-stone-600">Jatiya Kabi Kazi Nazrul Islam University</p><p className="mt-1 text-xs text-stone-400">2023 – present</p></div>
           </div>
-        </div>
-      </Reveal>
-      <Reveal delay={0.05} className="md:col-span-2">
-        <div className="tile h-full">
-          <GraduationCap className="text-accent" />
-          <p className="mt-3 text-xs font-semibold uppercase tracking-widest text-stone-400">Education</p>
-          <p className="mt-1 font-serif text-xl font-semibold">B.Sc. in CSE</p>
-          <p className="text-sm text-stone-600">Jatiya Kabi Kazi Nazrul Islam University</p>
-          <p className="mt-3 font-serif text-4xl font-semibold text-accent">3.65 <span className="text-sm font-sans font-normal text-stone-400">CGPA</span></p>
-        </div>
-      </Reveal>
-      <Reveal delay={0.1} className="md:col-span-2">
-        <div className="tile h-full !border-0 bg-gradient-to-br from-teal-700 to-teal-900 text-white">
-          <Shield className="text-teal-200" />
-          <p className="mt-3 text-xs font-semibold uppercase tracking-widest text-teal-200">Leadership</p>
-          <p className="mt-1 font-serif text-2xl font-semibold">President</p>
-          <p className="text-sm text-teal-100">JKKNIU Cyber Security Club — led teams in national competitions.</p>
-        </div>
-      </Reveal>
-      <Reveal delay={0.05} className="md:col-span-3">
-        <div className="tile h-full">
-          <Code2 className="text-accent" />
-          <p className="mt-3 text-xs font-semibold uppercase tracking-widest text-stone-400">Problem solving</p>
-          <div className="mt-3 grid grid-cols-3 gap-3 text-center">
-            {[['1087', 'CF max rating'], ['550+', 'CF solved'], ['150+', 'LeetCode']].map(([n, l]) => (
-              <div key={l} className="rounded-2xl bg-stone-50 py-3"><div className="font-serif text-2xl font-semibold">{n}</div><div className="text-xs text-stone-500">{l}</div></div>
+          <ul className="mt-5 space-y-2 border-t border-stone-200 pt-4 text-sm">
+            {EDUCATION.slice(1).map((e) => (
+              <li key={e.degree} className="flex items-baseline justify-between gap-3">
+                <span className="text-stone-600">{e.degree.match(/\((.*)\)/)?.[1]} · {e.period}</span>
+                <span className="font-mono text-xs font-semibold text-accent">{e.score}</span>
+              </li>
             ))}
+          </ul>
+        </Tile>
+      </Reveal>
+
+      {STATS.map((s, i) => (
+        <Reveal key={s.label} delay={0.04 * i} className="md:col-span-3">
+          <Tile label={`KPI-0${i + 1}`} className="h-full">
+            <div className="font-serif text-4xl font-semibold text-accent md:text-5xl"><Counter to={s.value} suffix={s.suffix} /></div>
+            <p className="mt-1 text-sm text-stone-600">{s.label}</p>
+          </Tile>
+        </Reveal>
+      ))}
+
+      <Reveal className="md:col-span-8">
+        <Tile id="skills" label="Skills & tooling" className="h-full">
+          <div className="grid gap-5 sm:grid-cols-2">
+            {SKILL_GROUPS.map((g) => {
+              const Icon = SKILL_ICON[g.key]
+              return (
+                <div key={g.key}>
+                  <h3 className="flex items-center gap-2 text-sm font-semibold"><Icon size={15} style={{ color: GROUP_COLOR[g.key] }} />{g.title}</h3>
+                  <div className="mt-2 flex flex-wrap gap-1.5">{SKILLS.filter((s) => s.group === g.key).map((s) => <span key={s.name} className="chip !px-3 !py-1 !text-xs">{s.name}</span>)}</div>
+                </div>
+              )
+            })}
           </div>
-          <p className="mt-3 text-sm text-stone-600">2★ on CodeChef · ACM ICPC 2025 Regionalist</p>
+        </Tile>
+      </Reveal>
+      <Reveal delay={0.05} className="md:col-span-4">
+        <div className="tile h-full !border-0 bg-gradient-to-br from-teal-700 to-teal-900 text-white">
+          <p className="label mb-3 !text-teal-200">Leadership</p>
+          <Shield className="text-teal-200" />
+          <p className="mt-3 font-serif text-3xl font-semibold">President</p>
+          <p className="mt-1 text-sm text-teal-100">JKKNIU Cyber Security Club — led teams in national competitions.</p>
+          <p className="mt-4 text-xs text-teal-200">{ORGANIZATIONS.length} roles · 3 organizations</p>
         </div>
       </Reveal>
-      <Reveal delay={0.1} className="md:col-span-3">
-        <div className="tile h-full">
+
+      <Reveal className="md:col-span-6">
+        <Tile label="Location" className="h-full">
           <MapPin className="text-accent" />
-          <p className="mt-3 text-xs font-semibold uppercase tracking-widest text-stone-400">Based in</p>
-          <p className="mt-1 font-serif text-xl font-semibold">{PROFILE.location}</p>
-          <p className="mt-3 text-sm text-stone-600">Also active in Mid-Day Programming Club and Rotaract Club of JKKNIU.</p>
-        </div>
+          <p className="mt-2 font-serif text-xl font-semibold">{PROFILE.location}</p>
+          <p className="mt-2 text-sm text-stone-600">Also active in Mid-Day Programming Club and Rotaract Club of JKKNIU.</p>
+        </Tile>
+      </Reveal>
+      <Reveal delay={0.05} className="md:col-span-6">
+        <Tile label="Competitive programming" className="h-full">
+          <Terminal className="text-accent" />
+          <p className="mt-2 font-serif text-xl font-semibold">Codeforces max rating 1087 · CodeChef 2★</p>
+          <p className="mt-2 text-sm text-stone-600">ACM ICPC 2025 Regionalist · 550+ Codeforces and 150+ LeetCode problems solved.</p>
+        </Tile>
       </Reveal>
     </div>
   </Wrap>
 )
 
-/* ───────── Skills ───────── */
-const SKILL_ICON = { sec: Shield, tool: Wrench, dev: Code2, os: Monitor }
-const SKILL_TINT = { sec: 'bg-teal-50 text-teal-700', tool: 'bg-indigo-50 text-indigo-700', dev: 'bg-sky-50 text-sky-700', os: 'bg-amber-50 text-amber-700' }
+/* ───────── § 02 Achievements — medal wall + findings report ───────── */
+const TIERS = {
+  gold: ['#fef3c7', '#f59e0b', '#92400e'],
+  silver: ['#f5f5f4', '#a8a29e', '#44403c'],
+  bronze: ['#fed7aa', '#ea580c', '#7c2d12'],
+  teal: ['#99f6e4', '#14b8a6', '#115e59'],
+  indigo: ['#c7d2fe', '#6366f1', '#312e81'],
+}
 
-export const Skills = () => (
-  <div className="bg-stone-100/70">
-    <Wrap id="skills" kicker="Toolbox" title="What I work with" intro="Offensive-security tooling, the languages I build with, and the systems I live in.">
-      <div className="grid gap-4 md:grid-cols-2">
-        {SKILL_GROUPS.map((g, i) => {
-          const Icon = SKILL_ICON[g.key]
-          return (
-            <Reveal key={g.key} delay={i * 0.06}>
-              <div className="tile h-full">
-                <div className="flex items-center gap-3">
-                  <span className={`grid h-11 w-11 place-items-center rounded-2xl ${SKILL_TINT[g.key]}`}><Icon size={20} /></span>
-                  <h3 className="font-serif text-xl font-semibold">{g.title}</h3>
-                </div>
-                <div className="mt-5 flex flex-wrap gap-2">{SKILLS.filter((s) => s.group === g.key).map((s) => <span key={s.name} className="chip">{s.name}</span>)}</div>
-              </div>
-            </Reveal>
-          )
-        })}
-      </div>
-    </Wrap>
-  </div>
-)
+function Medal({ tier, top, title, sub }) {
+  const id = useId().replace(/:/g, '')
+  const [l, m, d] = TIERS[tier]
+  return (
+    <div className="medal flex flex-col items-center text-center">
+      <svg viewBox="0 0 100 126" className="h-32 w-auto drop-shadow-lg" role="img" aria-label={`${top} — ${title}`}>
+        <defs>
+          <radialGradient id={`g${id}`} cx="35%" cy="30%" r="80%"><stop offset="0" stopColor={l} /><stop offset=".55" stopColor={m} /><stop offset="1" stopColor={d} /></radialGradient>
+          <linearGradient id={`r${id}`} x1="0" x2="1"><stop offset="0" stopColor={m} /><stop offset="1" stopColor={d} /></linearGradient>
+        </defs>
+        <path d="M30 0h16l10 38H36z" fill={`url(#r${id})`} /><path d="M70 0H54L44 38h20z" fill={`url(#r${id})`} opacity=".85" />
+        <circle cx="50" cy="78" r="38" fill={`url(#g${id})`} />
+        <circle cx="50" cy="78" r="31" fill="none" stroke={l} strokeOpacity=".7" strokeWidth="1.5" strokeDasharray="2 3" />
+        <text x="50" y="86" textAnchor="middle" fontFamily="Fraunces, serif" fontWeight="800" fontSize={top.length > 4 ? 15 : 24} fill={d}>{top}</text>
+      </svg>
+      <p className="mt-2 text-sm font-semibold leading-tight">{title}</p>
+      <p className="mt-0.5 text-xs text-stone-500">{sub}</p>
+    </div>
+  )
+}
 
-/* ───────── Achievements ───────── */
+const MEDALS = [
+  { tier: 'gold', top: '1st', title: 'RoboFest CTF 2026', sub: 'Champion' },
+  { tier: 'silver', top: '2nd', title: 'BCS CTF 2026', sub: '1st Runners-Up' },
+  { tier: 'teal', top: '11th', title: 'HackerOne Bug Hunt', sub: 'Onsite · with bounty' },
+  { tier: 'indigo', top: 'Top 100', title: 'Black Hat CTF', sub: 'Bugcrowd · 2025' },
+  { tier: 'bronze', top: 'Final', title: 'z0d1ak CTF', sub: 'VIT Vellore, India' },
+  { tier: 'silver', top: 'ICPC', title: 'ACM ICPC 2025', sub: 'Regionalist' },
+]
+
 const yearOf = (d) => (d.match(/20\d\d/g) || ['—']).slice(-1)[0]
-const pill = (r) => {
-  if (/champion|^1st/i.test(r)) return 'bg-amber-100 text-amber-800'
-  if (/runners|^2nd|^3rd/i.test(r)) return 'bg-stone-200 text-stone-800'
+const IMPACT = {
+  CRITICAL: 'bg-red-500/15 text-red-500',
+  HIGH: 'bg-orange-500/15 text-orange-500',
+  MEDIUM: 'bg-amber-500/15 text-amber-600',
+  LOW: 'bg-sky-500/15 text-sky-500',
+  INFO: 'bg-stone-500/15 text-stone-500',
+}
+const impactOf = (r) => {
   const n = parseInt(r, 10)
-  if (!Number.isNaN(n) && n <= 12) return 'bg-accent-soft text-accent-dark'
-  if (/qualified|top|regionalist/i.test(r)) return 'bg-accent-soft text-accent-dark'
-  return 'bg-stone-100 text-stone-600'
+  if (/champion|runners/i.test(r)) return 'CRITICAL'
+  if (/qualified|top|regionalist/i.test(r) || (!Number.isNaN(n) && n <= 12)) return 'HIGH'
+  if (!Number.isNaN(n) && n <= 30) return 'MEDIUM'
+  if (!Number.isNaN(n)) return 'LOW'
+  return 'INFO'
 }
 const FILTERS = [['all', 'All'], ['national', 'National CTF'], ['international', 'International CTF'], ['programming', 'Programming']]
 
-function Timeline() {
+function Findings() {
   const [f, setF] = useState('all')
+  const rows = useMemo(() => {
+    const all = Object.entries(CONTESTS).flatMap(([track, list]) => list.map(([name, result, date]) => ({ track, name, result, date, year: yearOf(date), impact: impactOf(result) })))
+    return all.sort((a, b) => b.year - a.year).map((r, i) => ({ ...r, id: `F-${String(i + 1).padStart(2, '0')}` }))
+  }, [])
   const groups = useMemo(() => {
-    const rows = Object.entries(CONTESTS).flatMap(([track, list]) => list.map(([name, result, date]) => ({ track, name, result, date, year: yearOf(date) })))
-    const by = rows.sort((a, b) => b.year - a.year).filter((r) => f === 'all' || r.track === f).reduce((m, r) => ((m[r.year] ||= []).push(r), m), {})
+    const by = rows.filter((r) => f === 'all' || r.track === f).reduce((m, r) => ((m[r.year] ||= []).push(r), m), {})
     return Object.entries(by).sort((a, b) => b[0] - a[0])
-  }, [f])
+  }, [rows, f])
+  const cols = 'md:grid-cols-[4rem_1fr_9rem_11rem_6.5rem]'
 
   return (
-    <div className="mt-14">
+    <div className="mt-16">
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <h3 className="font-serif text-2xl font-semibold">Every contest, by year</h3>
+        <div>
+          <p className="label">Findings log</p>
+          <h3 className="font-serif text-2xl font-semibold md:text-3xl">Every contest, rated by impact</h3>
+        </div>
         <div role="tablist" className="flex flex-wrap gap-2">
           {FILTERS.map(([k, l]) => (
             <button key={k} role="tab" aria-selected={f === k} onClick={() => setF(k)}
@@ -246,15 +299,29 @@ function Timeline() {
           ))}
         </div>
       </div>
-      <div className="mt-8 space-y-10">
+      <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-stone-500">
+        Impact = placement tier:
+        {Object.keys(IMPACT).map((k) => <span key={k} className={`rounded px-1.5 py-0.5 font-mono text-[10px] font-semibold ${IMPACT[k]}`}>{k}</span>)}
+      </p>
+
+      <div className="mt-6 overflow-hidden rounded-2xl border border-stone-200 bg-surface">
+        <div className={`label hidden border-b border-stone-200 bg-stone-50 px-5 py-3 md:grid ${cols} gap-4`}>
+          <span>ID</span><span>Event</span><span>Date</span><span>Result</span><span>Impact</span>
+        </div>
         {groups.map(([year, items]) => (
-          <div key={year} className="grid gap-4 md:grid-cols-[7rem_1fr]">
-            <div className="font-serif text-3xl font-semibold text-stone-300 md:text-4xl md:sticky md:top-24 md:self-start">{year}</div>
-            <ul className="space-y-2">
+          <div key={year}>
+            <div className="flex items-center justify-between border-b border-stone-200 bg-stone-50 px-5 py-2">
+              <span className="font-serif text-xl font-semibold text-stone-500">{year}</span>
+              <span className="label">{items.length} {items.length === 1 ? 'entry' : 'entries'}</span>
+            </div>
+            <ul className="divide-y divide-stone-100">
               {items.map((r) => (
-                <li key={r.name + r.date} className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 rounded-2xl border border-stone-200 bg-surface px-4 py-3 transition hover:border-accent/50">
-                  <span><span className="block font-medium">{r.name}</span><span className="block text-xs text-stone-500">{r.date}</span></span>
-                  <span className={`rounded-full px-3 py-1 text-xs font-semibold ${pill(r.result)}`}>{r.result}</span>
+                <li key={r.id} className={`grid gap-x-4 gap-y-1 px-5 py-3 text-sm transition hover:bg-accent-soft/30 md:items-center ${cols}`}>
+                  <span className="font-mono text-xs text-stone-400">{r.id}</span>
+                  <span className="font-medium">{r.name}</span>
+                  <span className="text-stone-500">{r.date}</span>
+                  <span className="font-semibold text-accent-dark">{r.result}</span>
+                  <span><span className={`inline-block rounded px-2 py-0.5 font-mono text-[10px] font-semibold ${IMPACT[r.impact]}`}>{r.impact}</span></span>
                 </li>
               ))}
             </ul>
@@ -265,41 +332,27 @@ function Timeline() {
   )
 }
 
-export const Achievements = () => {
-  const [hero, ...rest] = HIGHLIGHTS
-  return (
-    <Wrap id="achievements" kicker="Achievements" title="Podiums, bounties and finals." intro="Highlights from national and international CTFs, plus programming contests.">
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
-        <Reveal className="col-span-2 md:row-span-2">
-          <div className="relative h-full min-h-64 overflow-hidden rounded-3xl md:min-h-72 bg-gradient-to-br from-[#0c0a09] via-[#0c0a09] to-teal-900 ring-1 ring-white/10 p-8 text-white">
-            <Trophy className="absolute -right-6 -top-6 h-40 w-40 text-white/5" />
-            <span className="inline-block rounded-full bg-amber-400/20 px-3 py-1 text-xs font-semibold text-amber-300">{hero.note}</span>
-            <div className="mt-8 font-serif text-7xl font-semibold text-amber-300 md:mt-10 md:text-8xl">{hero.rank}</div>
-            <p className="mt-2 font-serif text-2xl">{hero.title}</p>
-          </div>
-        </Reveal>
-        {rest.map((h, i) => (
-          <Reveal key={h.title} delay={0.05 * (i + 1)}>
-            <div className="tile h-full">
-              <div className="font-serif text-3xl font-semibold text-accent md:text-4xl">{h.rank}</div>
-              <p className="mt-2 text-sm font-semibold leading-snug">{h.title}</p>
-              <p className="mt-1 text-xs text-stone-500">{h.note}</p>
-            </div>
-          </Reveal>
-        ))}
+export const Achievements = () => (
+  <Wrap id="achievements" num="02" kicker="Achievements" title="Podiums, bounties and finals." intro="The highlights on the wall — and every contest in the findings log below.">
+    <Reveal>
+      <div className="rounded-3xl border border-stone-200 bg-surface px-4 pb-6 pt-8 md:px-8">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-6">
+          {MEDALS.map((m) => <Medal key={m.title} {...m} />)}
+        </div>
+        <div className="mt-6 h-1.5 rounded-full bg-gradient-to-r from-transparent via-stone-300 to-transparent" aria-hidden />
       </div>
-      <Timeline />
-    </Wrap>
-  )
-}
+    </Reveal>
+    <Findings />
+  </Wrap>
+)
 
-/* ───────── Credentials ───────── */
+/* ───────── § 03 Credentials ───────── */
 const orgGroups = () => Object.entries(ORGANIZATIONS.reduce((m, o) => ((m[o.org] ||= []).push(o), m), {}))
 
 export const Credentials = () => (
   <div className="bg-stone-100/70">
-    <Wrap id="credentials" kicker="Credentials" title="Certified, educated, and leading.">
-      <h3 className="mb-4 flex items-center gap-2 font-serif text-xl font-semibold"><Award size={20} className="text-accent" /> Certifications</h3>
+    <Wrap id="credentials" num="03" kicker="Appendix" title="Certified, educated, and leading.">
+      <h3 className="mb-4 flex items-center gap-2 font-serif text-xl font-semibold"><Award size={20} className="text-accent" /> Appendix A — Certifications</h3>
       <div className="grid gap-4 md:grid-cols-3">
         {CERTIFICATIONS.map((c, i) => (
           <Reveal key={c.name} delay={i * 0.06}>
@@ -316,12 +369,12 @@ export const Credentials = () => (
 
       <div className="mt-14 grid gap-10 md:grid-cols-2">
         <div>
-          <h3 className="mb-5 flex items-center gap-2 font-serif text-xl font-semibold"><GraduationCap size={20} className="text-accent" /> Education</h3>
+          <h3 className="mb-5 flex items-center gap-2 font-serif text-xl font-semibold"><GraduationCap size={20} className="text-accent" /> Appendix B — Education</h3>
           <ol className="relative space-y-6 border-l-2 border-stone-200 pl-6">
             {EDUCATION.map((e) => (
               <li key={e.degree} className="relative">
                 <span className="absolute -left-[31px] top-1.5 h-3 w-3 rounded-full border-2 border-paper bg-accent" />
-                <p className="text-xs font-semibold text-accent">{e.period}</p>
+                <p className="font-mono text-xs font-medium text-accent">{e.period}</p>
                 <p className="font-semibold">{e.degree}</p>
                 <p className="text-sm text-stone-600">{e.school}</p>
                 <p className="mt-1 inline-block rounded-full bg-surface px-2.5 py-0.5 text-xs font-medium ring-1 ring-stone-200">{e.score}</p>
@@ -330,7 +383,7 @@ export const Credentials = () => (
           </ol>
         </div>
         <div>
-          <h3 className="mb-5 flex items-center gap-2 font-serif text-xl font-semibold"><Building2 size={20} className="text-accent" /> Leadership</h3>
+          <h3 className="mb-5 flex items-center gap-2 font-serif text-xl font-semibold"><Building2 size={20} className="text-accent" /> Appendix C — Leadership</h3>
           <div className="space-y-3">
             {orgGroups().map(([org, roles]) => (
               <div key={org} className="tile !p-5">
@@ -349,26 +402,27 @@ export const Credentials = () => (
   </div>
 )
 
-/* ───────── Projects ───────── */
+/* ───────── § 04 Projects ───────── */
 const PROJECT_ICON = [Gamepad2, Smartphone, ClipboardCheck]
 
 export const Projects = () => (
-  <Wrap id="projects" kicker="Projects" title="Things I've built.">
+  <Wrap id="projects" num="04" kicker="Case studies" title="Things I've built.">
     <div className="grid gap-5 md:grid-cols-3">
       {PROJECTS.map((p, i) => {
         const Icon = PROJECT_ICON[i % PROJECT_ICON.length]
         return (
-          <Reveal key={p.title} delay={i * 0.07}>
-            <article className="group overflow-hidden rounded-3xl border border-stone-200 bg-surface transition duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-stone-900/10">
+          <Reveal key={p.title} delay={i * 0.07} className="h-full">
+            <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-stone-200 bg-surface transition duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-stone-900/10">
               <div className="relative grid h-44 place-items-center overflow-hidden" style={{ background: `linear-gradient(135deg, hsl(${p.hue} 55% 20%), hsl(${p.hue} 60% 42%))` }}>
                 <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '22px 22px' }} aria-hidden />
+                <span className="absolute left-4 top-3 font-mono text-[11px] tracking-widest text-white/70">P-{String(i + 1).padStart(2, '0')}</span>
                 <Icon size={56} strokeWidth={1.2} className="relative text-white/90 transition duration-500 group-hover:scale-110" />
               </div>
-              <div className="p-5">
+              <div className="flex flex-1 flex-col p-5">
                 <h3 className="font-serif text-xl font-semibold">{p.title}</h3>
                 <p className="mt-2 text-sm text-stone-600">{p.desc}</p>
                 <div className="mt-4 flex flex-wrap gap-2">{p.tags.map((t) => <span key={t} className="rounded-full bg-stone-100 px-2.5 py-1 text-xs font-medium text-stone-700">{t}</span>)}</div>
-                <a href={p.github} target="_blank" rel="noreferrer" className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:text-accent-dark"><Github size={15} /> View code <ArrowUpRight size={14} /></a>
+                <a href={p.github} target="_blank" rel="noreferrer" className="mt-auto inline-flex w-fit pt-5 items-center gap-1.5 text-sm font-semibold text-accent hover:text-accent-dark"><Github size={15} /> View code <ArrowUpRight size={14} /></a>
               </div>
             </article>
           </Reveal>
@@ -378,7 +432,7 @@ export const Projects = () => (
   </Wrap>
 )
 
-/* ───────── Contact ───────── */
+/* ───────── § 05 Contact ───────── */
 export function Contact() {
   const [f, setF] = useState({ name: '', email: '', msg: '' })
   const [sent, setSent] = useState(false)
@@ -399,10 +453,10 @@ export function Contact() {
         <div className="pointer-events-none absolute -right-20 -top-20 h-80 w-80 rounded-full bg-accent/30 blur-3xl" aria-hidden />
         <div className="relative grid gap-10 md:grid-cols-2">
           <div>
-            <p className="kicker !text-teal-200 before:!bg-teal-200">Contact</p>
+            <p className="kicker !text-teal-200 before:!bg-teal-200">§ 06 / End of report</p>
             <h2 className="font-serif text-3xl font-semibold leading-tight sm:text-4xl md:text-5xl">Let's talk security, CTFs or code.</h2>
             <p className="mt-4 max-w-md text-stone-400">Open to collaborations, team-ups, internships and conversations about offensive security.</p>
-            <a href={`mailto:${PROFILE.email}`} className="mt-8 inline-flex max-w-full items-center gap-2 text-[15px] font-semibold sm:text-lg text-teal-200 underline-offset-4 hover:underline"><Mail size={18} /> {PROFILE.email}</a>
+            <a href={`mailto:${PROFILE.email}`} className="mt-8 inline-flex max-w-full items-center gap-2 text-[15px] font-semibold text-teal-200 underline-offset-4 hover:underline sm:text-lg"><Mail size={18} /> {PROFILE.email}</a>
             <div className="mt-6 flex gap-3">
               {[[Github, PROFILE.github, 'GitHub'], [Linkedin, PROFILE.linkedin, 'LinkedIn']].map(([Icon, href, label]) => (
                 <a key={label} href={href} target="_blank" rel="noreferrer" className="btn border border-white/20 !py-2.5 hover:bg-white hover:!text-[#0c0a09]"><Icon size={16} /> {label}</a>
@@ -413,7 +467,7 @@ export function Contact() {
             <label className="block text-sm font-medium text-stone-600">Name<input required className={input} value={f.name} onChange={set('name')} /></label>
             <label className="block text-sm font-medium text-stone-600">Email<input required type="email" className={input} value={f.email} onChange={set('email')} /></label>
             <label className="block text-sm font-medium text-stone-600">Message<textarea required rows={4} className={`${input} resize-none`} value={f.msg} onChange={set('msg')} /></label>
-            <button className="btn w-full justify-center bg-teal-700 text-white hover:bg-teal-800"><Send size={15} /> Send message</button>
+            <button className="btn w-full bg-teal-700 text-white hover:bg-teal-800"><Send size={15} /> Send message</button>
             {sent && <p className="text-center text-xs text-stone-500">Opening your email app with the message filled in…</p>}
           </form>
         </div>
