@@ -2,19 +2,20 @@ import { Link } from 'react-router-dom'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { Reveal, Wrap } from './Sections'
 import usePosts from '../hooks/usePosts'
+import PostCover from './PostCover'
 import { fmtDate } from '../lib/format'
 
 const LIMIT = 3
-const hueOf = (s) => [...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) % 360, 7)
 
 // Compact card: no excerpt on purpose — the home page only teases, the full dashboard lives on /blog.
 function PostCard({ post }) {
   const inSite = post.source === 'github'
-  const hue = hueOf(post.title)
   const cls = 'group relative flex h-full flex-col overflow-hidden rounded-3xl border border-stone-200 bg-surface p-6 transition duration-300 hover:-translate-y-1 hover:border-accent/50 hover:shadow-2xl hover:shadow-stone-900/10'
   const body = (
     <>
-      <span className="absolute inset-x-0 top-0 h-1" style={{ background: `linear-gradient(90deg, hsl(${hue} 60% 45%), hsl(${(hue + 50) % 360} 60% 55%))` }} aria-hidden />
+      <div className="relative -mx-6 -mt-6 mb-5 h-28 overflow-hidden">
+        <PostCover post={post} />
+      </div>
       <div className="flex items-center justify-between gap-3">
         <span className="label truncate">{post.event || (post.source === 'medium' ? 'Medium' : 'GitHub')}</span>
         <time dateTime={post.date} className="shrink-0 font-mono text-[11px] text-stone-400">{fmtDate(post.date)}</time>

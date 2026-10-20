@@ -2,9 +2,9 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowUpRight, BookOpen, CircleAlert, FileText, Github, RefreshCw, Search, X } from 'lucide-react'
 import usePosts from '../hooks/usePosts'
+import PostCover from '../components/PostCover'
 import { fmtDate } from '../lib/format'
 
-const hueOf = (s) => [...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) % 360, 7)
 
 const SRC = {
   medium: { label: 'Medium', Icon: BookOpen, cls: 'bg-stone-500/15 text-stone-600' },
@@ -18,19 +18,12 @@ function SourceBadge({ source }) {
 
 /* ───────── one post in the bento grid ───────── */
 function PostTile({ post, size }) {
-  const [imgOk, setImgOk] = useState(true)
   const feature = size === 'feature'
-  const hue = hueOf(post.title)
   const cls = `group relative flex h-full flex-col overflow-hidden rounded-3xl border border-stone-200 bg-surface transition duration-300 hover:-translate-y-1 hover:border-accent/50 hover:shadow-2xl hover:shadow-stone-900/10 ${feature ? 'sm:col-span-2 lg:row-span-2' : size === 'wide' ? 'sm:col-span-2' : ''}`
   const body = (
     <>
-      <div className={`relative overflow-hidden ${feature ? 'min-h-48 flex-1' : 'h-28 shrink-0'}`} style={{ background: `linear-gradient(135deg, hsl(${hue} 55% 18%), hsl(${hue} 60% 40%))` }}>
-        {post.thumbnail && imgOk
-          ? <img src={post.thumbnail} alt="" loading="lazy" onError={() => setImgOk(false)} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
-          : <>
-              <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '20px 20px' }} aria-hidden />
-              <FileText size={feature ? 52 : 36} strokeWidth={1.2} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/60" />
-            </>}
+      <div className={`relative overflow-hidden ${feature ? 'min-h-48 flex-1' : 'h-28 shrink-0'}`}>
+        <PostCover post={post} big={feature} />
         {feature && (post.event || post.tags?.[0]) && <span className="pointer-events-none absolute bottom-5 left-6 right-6 truncate font-serif text-4xl font-extrabold leading-none text-white/20 md:text-6xl" aria-hidden>{post.event || post.tags[0]}</span>}
         {post.event && <span className="absolute left-3 top-3 max-w-[70%] truncate rounded-full bg-black/45 px-2.5 py-1 text-[11px] font-medium text-white backdrop-blur">{post.event}</span>}
       </div>
